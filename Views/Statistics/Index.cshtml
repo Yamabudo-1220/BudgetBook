@@ -1,0 +1,32 @@
+@{
+    ViewData["Title"] = "Statistiken";
+}
+
+<h1>Statistiken</h1>
+
+<div class="row g-3 md-4">
+    <div class="col-md-4">
+        <div class="card border-success">
+            <div class="card-body">
+                <h5 class="card title">Einnahmen</h5>
+                <p class="card-text fs-4 text-success">@Model.TotalIncome.ToString("N2") €</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-danger">
+            <div class="card-body">
+                <h5 class="card title">Ausgaben</h5>
+                <p class="card-text fs-4 text-danger">@Model.TotalExpense.ToString("N2") €</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card @(Model.Balance < 0 ? "border-danger" : "border-primary")">
+            <div class="card-body">
+                <h5 class="card title">Saldo</h5>
+                <p class="card-text fs-4 @(Model.Balance < 0 ? "text-danger" : "text-primary")">@Model.Balance.ToString("N2") €</p>
+            </div>
+        </div>
+    </div>
+</div>
