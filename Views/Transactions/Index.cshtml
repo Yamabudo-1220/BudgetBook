@@ -1,0 +1,57 @@
+@model IEnumerable<BudgetBook.Models.Transaction>
+
+@{
+    ViewData["Title"] = "Meine Buchungen";
+}
+
+<h1>Meine Buchungen</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Neue Buchung</a>
+</p>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Noch keine Buchungen vorhanden.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Datum</th>
+                <th>Typ</th>
+                <th>Kategorie</th>
+                <th>Beschreibung</th>
+                <th class="text-end">Betrag</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.BookingDate.ToString("dd.MM.yyyy")</td>
+                <td>
+                    @if (item.Type == BudgetBook.Models.TransactionType.Income)
+                    {
+                        <span class="badge bg-success">Einnahme</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Ausgabe</span>
+                    }
+                </td>
+                <td>@item.Category?.Name</td>
+                <td>@item.Description</td>
+                <td class="text-end">@item.Amount.ToString("N2") €</td>
+                <td class="text-end">
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Löschen</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
