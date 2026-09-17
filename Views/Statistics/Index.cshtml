@@ -1,14 +1,16 @@
+@model BudgetBook.Models.ViewModels.StatisticsViewModel
+
 @{
     ViewData["Title"] = "Statistiken";
 }
 
 <h1>Statistiken</h1>
 
-<div class="row g-3 md-4">
+<div class="row g-3 mb-4">
     <div class="col-md-4">
         <div class="card border-success">
             <div class="card-body">
-                <h5 class="card title">Einnahmen</h5>
+                <h5 class="card-title">Einnahmen</h5>
                 <p class="card-text fs-4 text-success">@Model.TotalIncome.ToString("N2") €</p>
             </div>
         </div>
@@ -16,7 +18,7 @@
     <div class="col-md-4">
         <div class="card border-danger">
             <div class="card-body">
-                <h5 class="card title">Ausgaben</h5>
+                <h5 class="card-title">Ausgaben</h5>
                 <p class="card-text fs-4 text-danger">@Model.TotalExpense.ToString("N2") €</p>
             </div>
         </div>
@@ -24,9 +26,59 @@
     <div class="col-md-4">
         <div class="card @(Model.Balance < 0 ? "border-danger" : "border-primary")">
             <div class="card-body">
-                <h5 class="card title">Saldo</h5>
+                <h5 class="card-title">Saldo</h5>
                 <p class="card-text fs-4 @(Model.Balance < 0 ? "text-danger" : "text-primary")">@Model.Balance.ToString("N2") €</p>
             </div>
         </div>
     </div>
+</div>
+
+<h2 class="h4 mt-4">Summe je Kategorie</h2>
+
+@if (Model.TopCategory is not null)
+{
+    <p class="text-muted">
+        Top-Ausgabenkategorie: <strong>@Model.TopCategory.CategoryName</strong>
+        (@Model.TopCategory.Total.ToString("N2") €)
+    </p>
+}
+
+@if (!Model.CategorySums.Any())
+{
+    <div class="alert alert-info">Keine Buchungen vorhanden.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Kategorie</th>
+                <th>Typ</th>
+                <th class="text-end">Summe</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var row in Model.CategorySums)
+        {
+            <tr>
+                <td>@row.CategoryName</td>
+                <td>
+                    @if (row.Type == BudgetBook.Models.TransactionType.Income)
+                    {
+                        <span class="badge bg-success">Einnahme</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Ausgabe</span>
+                    }
+                </td>
+                <td class="text-end">@row.Total.ToString("N2") €</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+<div class="mt-3">
+    <a asp-controller="Transactions" asp-action="Index" class="btn btn-secondary">Zurück zu den Buchungen</a>
 </div>
