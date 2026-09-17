@@ -5,6 +5,7 @@
 }
 
 <h1>Statistiken</h1>
+<h1>@(ViewData["AdminHeading"] as string ?? "Statistiken")</h1>
 
 <div class="row g-3 mb-4">
     <div class="col-md-4">
@@ -80,5 +81,12 @@ else
 }
 
 <div class="mt-3">
-    <a asp-controller="Transactions" asp-action="Index" class="btn btn-secondary">Zurück zu den Buchungen</a>
+    @if (ViewData["AdminHeading"] is not null)
+    {
+        <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">Zurück zur Benutzerübersicht</a>
+    }
+    else
+    {
+        <a asp-controller="Transactions" asp-action="Index" class="btn btn-secondary">Zurück zu den Buchungen</a>
+    }
 </div>

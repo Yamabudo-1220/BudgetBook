@@ -1,0 +1,40 @@
+@model IEnumerable<BudgetBook.Models.ViewModels.AdminUserRow>
+
+@{
+    ViewData["Title"] = "Benutzerübersicht";
+}
+
+<h1>Benutzerübersicht</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Benutzer</th>
+            <th class="text-end">Buchungen</th>
+            <th class="text-end">Einnahmen</th>
+            <th class="text-end">Ausgaben</th>
+            <th class="text-end">Saldo</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var u in Model)
+    {
+        <tr>
+            <td>@u.Email</td>
+            <td class="text-end">@u.TransactionCount</td>
+            <td class="text-end text-success">@u.TotalIncome.ToString("N2") €</td>
+            <td class="text-end text-danger">@u.TotalExpense.ToString("N2") €</td>
+            <td class="text-end @(u.Balance < 0 ? "text-danger" : "")">@u.Balance.ToString("N2") €</td>
+            <td class="text-end">
+                <a asp-action="UserTransactions" asp-route-id="@u.UserId" class="btn btn-sm btn-outline-primary">Buchungen</a>
+                <a asp-action="UserStatistics" asp-route-id="@u.UserId" class="btn btn-sm btn-outline-secondary">Statistik</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<div class="mt-3">
+    <a asp-controller="Transactions" asp-action="Index" class="btn btn-secondary">Zurück zu den Buchungen</a>
+</div>

@@ -1,0 +1,51 @@
+@model BudgetBook.Models.ViewModels.AdminUserDetailViewModel
+
+@{
+    ViewData["Title"] = "Buchungen von " + Model.Email;
+}
+
+<h1>Buchungen von @Model.Email</h1>
+
+@if (!Model.Transactions.Any())
+{
+    <div class="alert alert-info">Dieser Benutzer hat noch keine Buchungen.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Datum</th>
+                <th>Typ</th>
+                <th>Kategorie</th>
+                <th>Beschreibung</th>
+                <th class="text-end">Betrag</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var t in Model.Transactions)
+        {
+            <tr>
+                <td>@t.BookingDate.ToString("dd.MM.yyyy")</td>
+                <td>
+                    @if (t.Type == BudgetBook.Models.TransactionType.Income)
+                    {
+                        <span class="badge bg-success">Einnahme</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Ausgabe</span>
+                    }
+                </td>
+                <td>@t.Category?.Name</td>
+                <td>@t.Description</td>
+                <td class="text-end">@t.Amount.ToString("N2") €</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+<div class="mt-3">
+    <a asp-action="Index" class="btn btn-secondary">Zurück zur Übersicht</a>
+</div>
