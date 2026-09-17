@@ -18,6 +18,17 @@ public static class StatisticsService
             })
             .ToListAsync();
 
+        var monthlySums = await transactions
+            .GroupBy(t => new { t.BookingDate.Year, t.BookingDate.Month })
+            .Select(g => new MonthSum
+            {
+                Year = g.Key.Year,
+                Month = g.Key.Month,
+                Income = g.Sum(t => t.Type == TransactionType.Income ? t.Amount : 0m),
+                Expense = g.Sum(t => t.Type == TransactionType.Expense ? t.Amount : 0m)
+            })
+            .ToListAsync();
+
         return new StatisticsViewModel
         {
             TotalIncome = await transactions
@@ -31,6 +42,11 @@ public static class StatisticsService
             CategorySums = categorySums
                 .OrderBy(c => c.Type)
                 .ThenByDescending(c => c.Total)
+                .ToList(),
+
+            MonthlySums = monthlySums
+                .OrderByDescending(m => m.Year)
+                .ThenByDescending(m => m.Month)
                 .ToList()
         };
     }

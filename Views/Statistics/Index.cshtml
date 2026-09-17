@@ -1,11 +1,47 @@
 @model BudgetBook.Models.ViewModels.StatisticsViewModel
 
 @{
-    ViewData["Title"] = "Statistiken";
+    ViewData["Title"] = (ViewData["AdminHeading"] as string) ?? "Statistiken";
+    var isAdminView = ViewData["AdminHeading"] is not null;
 }
 
-<h1>Statistiken</h1>
-<h1>@(ViewData["AdminHeading"] as string ?? "Statistiken")</h1>
+<h1>@((ViewData["AdminHeading"] as string) ?? "Statistiken")</h1>
+
+@if (!isAdminView)
+{
+    <form asp-action="Index" method="get" class="row g-2 mb-4 align-items-end">
+        <div class="col-auto">
+            <label class="form-label">Von</label>
+            <input type="date" name="from" value="@(Model.DateFrom?.ToString("yyyy-MM-dd"))" class="form-control" />
+        </div>
+        <div class="col-auto">
+            <label class="form-label">Bis</label>
+            <input type="date" name="to" value="@(Model.DateTo?.ToString("yyyy-MM-dd"))" class="form-control" />
+        </div>
+        <div class="col-auto">
+            <label class="form-label">Typ</label>
+            <select name="type" class="form-select">
+                <option value="">Alle</option>
+                <option value="Income" selected="@(Model.FilterType == BudgetBook.Models.TransactionType.Income)">Einnahme</option>
+                <option value="Expense" selected="@(Model.FilterType == BudgetBook.Models.TransactionType.Expense)">Ausgabe</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <label class="form-label">Kategorie</label>
+            <select name="categoryId" class="form-select">
+                <option value="">Alle</option>
+                @foreach (var c in Model.Categories)
+                {
+                    <option value="@c.Value" selected="@(Model.FilterCategoryId?.ToString() == c.Value)">@c.Text</option>
+                }
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Filtern</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Zurücksetzen</a>
+        </div>
+    </form>
+}
 
 <div class="row g-3 mb-4">
     <div class="col-md-4">
@@ -46,7 +82,7 @@
 
 @if (!Model.CategorySums.Any())
 {
-    <div class="alert alert-info">Keine Buchungen vorhanden.</div>
+    <div class="alert alert-info">Keine Buchungen im gewählten Zeitraum.</div>
 }
 else
 {
@@ -80,8 +116,39 @@ else
     </table>
 }
 
+<h2 class="h4 mt-4">Monatsübersicht</h2>
+
+@if (!Model.MonthlySums.Any())
+{
+    <div class="alert alert-info">Keine Buchungen im gewählten Zeitraum.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Monat</th>
+                <th class="text-end">Einnahmen</th>
+                <th class="text-end">Ausgaben</th>
+                <th class="text-end">Saldo</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var m in Model.MonthlySums)
+        {
+            <tr>
+                <td>@m.Label</td>
+                <td class="text-end text-success">@m.Income.ToString("N2") €</td>
+                <td class="text-end text-danger">@m.Expense.ToString("N2") €</td>
+                <td class="text-end @(m.Balance < 0 ? "text-danger" : "")">@m.Balance.ToString("N2") €</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
 <div class="mt-3">
-    @if (ViewData["AdminHeading"] is not null)
+    @if (isAdminView)
     {
         <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">Zurück zur Benutzerübersicht</a>
     }
